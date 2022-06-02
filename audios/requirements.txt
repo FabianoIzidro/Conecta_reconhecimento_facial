@@ -1,0 +1,4 @@
+dlib(windows https://visualstudio.microsoft.com/visual-cpp-buil-tools/)
+face_recognition
+numpy
+opency-python
