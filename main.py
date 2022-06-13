@@ -63,22 +63,27 @@ def escutarMicrofone():
 Checa o texto por meio das condições para tentar entender o que foi falado. Se enteder algo, dá uma resposta em audio
 """
 def main():
+    print("0")
     while True:
+        print("1")
         setarExpressao("ausente")
         textoFalado = escutarMicrofone()
         respostas = []
-
+        print("2")
         # Se a palavra definida na variável wake_word tiver aparecido no texto audioEscutado, então aguarda que o usuário faça uma pergunta
-        if (textoFalado.count(wake_word) > 0):
+        if (textoFalado in ['connect', 'conect', wake_word]):
+            print("3")
             inicioDelay = time.time()
             parar = False
             numeroRespostas = 0
             falar(["Ao seu dispor"])
 
+            print("A")
             while((time.time() - inicioDelay < 120 and parar == False)): # Enquanto não tiver passado 2 minutos dentro do while ele continua aguardando uma pergunta
                 setarExpressao("aguardando")
                 textoFalado = escutarMicrofone()
 
+                print("B")
                 frasesBoasVindas = ["olá", "bom dia", "boa tarde", "boa noite"]
                 for frase in frasesBoasVindas:
                     if frase in textoFalado:
@@ -103,6 +108,11 @@ def main():
                 if "piada" in textoFalado:
                     respostas = ["Porquê os robôs nunca sentem medo? A resposta é: Porque nós temos nervos de aço. Rárárárá"]
                     
+                print("C")
+                if textoFalado in ['facial', 'social', 'parcial']:
+                    print('teste')
+                    facial()
+                print("D")
 
                 if "fechar" in textoFalado:
                     db.reference("Portas").child("Porta 1").set(True)
@@ -184,7 +194,49 @@ def setarExpressao(nomeExpressao):
 
     print("Expressão "+nomeExpressao+" definida")
 
+def facial():
+    print("ABRIR FACIAL")
+    rostos_conhecidos, nomes_dos_rostos = get_rostos()
 
+    video_capture = cv2.VideoCapture(0)
+    while True: 
+        ret, frame = video_capture.read()
+
+        rgb_frame = frame[:, :, ::-1]
+
+        localizacao_dos_rostos = fr.face_locations(rgb_frame)
+        rosto_desconhecidos = fr.face_encodings(rgb_frame, localizacao_dos_rostos)
+
+        for (top, right, bottom, left), rosto_desconhecido in zip(localizacao_dos_rostos, rosto_desconhecidos):
+            resultados = fr.compare_faces(rostos_conhecidos, rosto_desconhecido)
+            print(resultados)
+
+            face_distances = fr.face_distance(rostos_conhecidos, rosto_desconhecido)
+            melhor_id = np.argmin(face_distances)
+            if resultados[melhor_id]:
+                nome = nomes_dos_rostos[melhor_id]
+            else:
+                nome = "Desconhecido"
+            
+            # Ao redor do rosto
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+            # Embaixo
+            cv2.rectangle(frame, (left, bottom -35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_SIMPLEX
+
+            #Texto
+            cv2.putText(frame, nome, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+        cv2.imshow('Webcam_facerecognition', frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    print("ABRIR FACIAL")
+
+    video_capture.release()
+    cv2.destroyAllWindows()
 
 """
 # # # # Inicialização da Conecta # # # #
@@ -223,44 +275,3 @@ threadMain.daemon = True    # https://stackoverflow.com/questions/11815947/canno
 threadMain.start()
 
 janela.mainloop()
-
-rostos_conhecidos, nomes_dos_rostos = get_rostos()
-
-video_capture = cv2.VideoCapture(0)
-while True: 
-    ret, frame = video_capture.read()
-
-    rgb_frame = frame[:, :, ::-1]
-
-    localizacao_dos_rostos = fr.face_locations(rgb_frame)
-    rosto_desconhecidos = fr.face_encodings(rgb_frame, localizacao_dos_rostos)
-
-    for (top, right, bottom, left), rosto_desconhecido in zip(localizacao_dos_rostos, rosto_desconhecidos):
-        resultados = fr.compare_faces(rostos_conhecidos, rosto_desconhecido)
-        print(resultados)
-
-        face_distances = fr.face_distance(rostos_conhecidos, rosto_desconhecido)
-        g
-        melhor_id = np.argmin(face_distances)
-        if resultados[melhor_id]:
-            nome = nomes_dos_rostos[melhor_id]
-        else:
-            nome = "Desconhecido"
-        
-        # Ao redor do rosto
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-        # Embaixo
-        cv2.rectangle(frame, (left, bottom -35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-
-        #Texto
-        cv2.putText(frame, nome, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-
-        cv2.imshow('Webcam_facerecognition', frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-video_capture.release()
-cv2.destroyAllWindows()
