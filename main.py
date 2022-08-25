@@ -129,7 +129,7 @@ def main():
                     respostas = ["A data de hoje é "+str(date.today().strftime('%d-%m-%Y'))+" é uma "+str(dias[date.today().weekday()])]
 
                 if "clima do tempo" in textoFalado:
-                    respostas = ["A clima é "+str(descricao)+"e a temperatura"+str(temperatura)]
+                    respostas = ["O clima é "+str(descricao)+"e a temperatura"+str(temperatura)]
                
                 if "piada" in textoFalado:
                     respostas = ["Porquê os robôs nunca sentem medo? A resposta é: Porque nós temos nervos de aço. Rárárárá"]
