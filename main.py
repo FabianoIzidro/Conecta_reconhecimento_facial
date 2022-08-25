@@ -274,4 +274,8 @@ threadMain = threading.Thread(target=main, args=())
 threadMain.daemon = True    # https://stackoverflow.com/questions/11815947/cannot-kill-python-script-with-ctrl-c
 threadMain.start()
 
+threadMain = threading.Thread(target=facial, args=())
+threadMain.daemon = True  
+threadMain.start()
+
 janela.mainloop()
