@@ -1,8 +1,10 @@
 import os
 import time
 from random import randint
-from datetime import datetime
+from datetime import date, datetime
 import threading
+import requests
+import json
 
 import speech_recognition
 import pyttsx3
@@ -60,8 +62,26 @@ def escutarMicrofone():
     return textoFalado.lower()
 
 """
+Convertendo para nome da semana.
+"""
+dias = ('Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo')
+
+"""""
+Chave de previsão do tempo e temperatura
+"""""
+API_KEY = "cd8dda60323930bdea8068646500172b"
+cidade = "maceio"
+link = f"https://api.openweathermap.org/data/2.5/weather?q={cidade}&appid={API_KEY}&lang=pt_br"
+
+requisicao = requests.get(link)
+requisicao_dic = requisicao.json()
+descricao = requisicao_dic['weather'][0]['description']
+temperatura = requisicao_dic['main']['temp'] - 273.15
+
+"""
 Checa o texto por meio das condições para tentar entender o que foi falado. Se enteder algo, dá uma resposta em audio
 """
+
 def main():
     print("0")
     while True:
@@ -88,7 +108,7 @@ def main():
                 for frase in frasesBoasVindas:
                     if frase in textoFalado:
                         setarExpressao("respondendo")
-                        falar(["Oi! Tudo bem?"])
+                        falar(["Oi! Tudo bem com você?"])
                         setarExpressao("aguardando")
                         respostaBoasVindas = escutarMicrofone()
                         if "não" in respostaBoasVindas:
@@ -99,14 +119,22 @@ def main():
                 if "quem é" in textoFalado:
                     respostas = ["Eu sou a conecta, fui desenvolvida pelo núcleo de robótica do cesmac e esse chapéu de guerreiro na minha cabeça é uma homenagem ao folclore alagoano"]
 
-                if "horas" in textoFalado:
-                    respostas = ["Agora são "+str(datetime.today().hour)+" horas e "+str(datetime.today().minute)+" minutos"]
-
                 if "robótica" in textoFalado:
                     respostas = ["Eu fui desenvolvida no núcleo de robótica. Ele é um núcleo de pesquisa onde por meio da tecnologia são desenvolvidos projetos solicitados por alunos e professores. Como aplicativos, equipamentos e até mesmo próteses. O núcleo de robótica é multidisciplinar."]
 
+                if "horas" in textoFalado:
+                    respostas = ["Agora são "+str(datetime.today().hour)+" horas e "+str(datetime.today().minute)+" minutos"]
+                    
+                if "data e o dia de hoje" in textoFalado:
+                    respostas = ["A data de hoje é "+str(date.today().strftime('%d-%m-%Y'))+" é um "+str(dias[date.today().weekday()])]
+
+                if "previsao do tempo" in textoFalado:
+                    respostas = ["A previsão é "+str(descricao)+"e a temperatura"+str(temperatura)]
+               
                 if "piada" in textoFalado:
                     respostas = ["Porquê os robôs nunca sentem medo? A resposta é: Porque nós temos nervos de aço. Rárárárá"]
+                
+
                     
                 print("C")
                 if textoFalado in ['facial', 'social', 'parcial']:
@@ -144,7 +172,6 @@ def main():
 
                 falar(respostas)
                 respostas = []
-
 
 '''
 Função recebe por parâmetro o caminho de uma imagem animada GIF e retorna um array com cada frame da animação
