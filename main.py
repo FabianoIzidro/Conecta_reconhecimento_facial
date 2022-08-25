@@ -126,10 +126,10 @@ def main():
                     respostas = ["Agora são "+str(datetime.today().hour)+" horas e "+str(datetime.today().minute)+" minutos"]
                     
                 if "data e o dia de hoje" in textoFalado:
-                    respostas = ["A data de hoje é "+str(date.today().strftime('%d-%m-%Y'))+" é um "+str(dias[date.today().weekday()])]
+                    respostas = ["A data de hoje é "+str(date.today().strftime('%d-%m-%Y'))+" é uma "+str(dias[date.today().weekday()])]
 
-                if "previsao do tempo" in textoFalado:
-                    respostas = ["A previsão é "+str(descricao)+"e a temperatura"+str(temperatura)]
+                if "clima do tempo" in textoFalado:
+                    respostas = ["A clima é "+str(descricao)+"e a temperatura"+str(temperatura)]
                
                 if "piada" in textoFalado:
                     respostas = ["Porquê os robôs nunca sentem medo? A resposta é: Porque nós temos nervos de aço. Rárárárá"]
