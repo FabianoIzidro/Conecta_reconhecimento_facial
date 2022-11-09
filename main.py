@@ -19,6 +19,7 @@ import numpy as np
 import face_recognition as fr
 import cv2
 from engine import get_rostos
+from firebase_admin import credentials, db, initialize_app 
 
 # Palavra que é necessário falar antes de dar inicio a uma pergunta
 wake_word = "conect"
@@ -306,3 +307,17 @@ threadMain.daemon = True
 threadMain.start()
 
 janela.mainloop()
+
+# Inicialização do firebase
+credencial = credentials.Certificate("serviceAccountKey.json")
+firebase = initialize_app(credencial, {
+    'databaseURL': 'https://porta-citec-alunos-default-rtdb.firebaseio.com/'
+})
+
+def abrirPorta():
+  """Fecha a porta da frente do citec"""
+  db.reference("Portas").child("Porta 1").set(False)
+
+def fecharPorta():
+  """Abre a porta da frente do citec"""
+  db.reference("Portas").child("Porta 1").set(True)
