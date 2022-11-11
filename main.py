@@ -24,6 +24,19 @@ from firebase_admin import credentials, db, initialize_app
 # Palavra que é necessário falar antes de dar inicio a uma pergunta
 wake_word = "conect"
 
+# Inicialização do firebase
+credencial = credentials.Certificate("serviceAccountKey.json")
+firebase = initialize_app(credencial, {
+    'databaseURL': 'https://porta-citec-alunos-default-rtdb.firebaseio.com/'
+})
+
+def abrirPorta():
+  """Fecha a porta da frente do citec"""
+  db.reference("Portas").child("Porta 1").set(False)
+
+def fecharPorta():
+  """Abre a porta da frente do citec"""
+  db.reference("Portas").child("Porta 1").set(True)
 """
 Reproduz em audio o texto passado por parâmetro
 """
@@ -243,6 +256,7 @@ def facial():
             melhor_id = np.argmin(face_distances)
             if resultados[melhor_id]:
                 nome = nomes_dos_rostos[melhor_id]
+                abrirPorta()
             else:
                 nome = "Desconhecido"
             
@@ -276,11 +290,6 @@ janela.title("Conecta")
 janela.configure(bg="black")
 janela.attributes("-fullscreen", True)
 
-# Inicialização do firebase
-credencial = credentials.Certificate("serviceAccountKey.json")
-firebase = firebase_admin.initialize_app(credencial, {
-    'databaseURL': 'https://autcitec-default-rtdb.firebaseio.com/'
-})
 
 # Loading das expressões
 expressaoAusente = carregarFramesGIF("expressoes/expressao-ausente.gif")
@@ -307,17 +316,3 @@ threadMain.daemon = True
 threadMain.start()
 
 janela.mainloop()
-
-# Inicialização do firebase
-credencial = credentials.Certificate("serviceAccountKey.json")
-firebase = initialize_app(credencial, {
-    'databaseURL': 'https://porta-citec-alunos-default-rtdb.firebaseio.com/'
-})
-
-def abrirPorta():
-  """Fecha a porta da frente do citec"""
-  db.reference("Portas").child("Porta 1").set(False)
-
-def fecharPorta():
-  """Abre a porta da frente do citec"""
-  db.reference("Portas").child("Porta 1").set(True)
