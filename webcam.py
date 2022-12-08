@@ -19,20 +19,24 @@ while True:
         print(resultados)
 
         face_distances = fr.face_distance(rostos_conhecidos, rosto_desconhecido)
+        #print(face_distances)
+
+        #if int(face_distances*100) > 98:
 
         melhor_id = np.argmin(face_distances)
+        color=(0,0,0)
         if resultados[melhor_id]:
             nome = nomes_dos_rostos[melhor_id]
+            color=(0,100,0)
         else:
             nome = "Desconhecido"
+            color=(0,0,255)
         
         # Ao redor do rosto
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
+        cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
         # Embaixo
-        cv2.rectangle(frame, (left, bottom -35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom -35), (right, bottom), color , cv2.FILLED)
         font = cv2.FONT_HERSHEY_SIMPLEX
-
         #Texto
         cv2.putText(frame, nome, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
